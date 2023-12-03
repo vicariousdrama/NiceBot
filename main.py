@@ -1,5 +1,6 @@
 from logging.handlers import RotatingFileHandler
-from nostr.event import Event
+from nostr.event import Event, EventKind
+import json
 import logging
 import requests
 import shutil
@@ -30,6 +31,33 @@ def getBlockHeight():
                 return 0
     logger.warning(f"Could not get blockheight from API. Check config file for bitcoin.url")
     return 0
+
+def makeProfileFromDict(profile, pubkey):
+    j = {}
+    kset = ("name","about","description","nip05","lud16","picture","banner")
+    for k in kset: 
+        if k in profile and len(profile[k]) > 0: j[k] = profile[k]
+    if "description" in j and "about" not in j:
+        j["about"] = j["description"]
+        del j["description"]
+    content = json.dumps(j)
+    kind0 = Event(
+        content=content,
+        public_key=pubkey,
+        kind=EventKind.SET_METADATA,
+        )
+    return kind0
+
+def publishBotProfile():
+    profile = nostr.config["profile"]
+    profilePK = nostr.getPrivateKey()
+    pubkey = profilePK.public_key.hex()
+    kind0 = makeProfileFromDict(profile, pubkey)
+    profilePK.sign_event(kind0)
+    nostr.connectToRelays()
+    nostr._relayManager.publish_event(kind0)
+    time.sleep(nostr._relayPublishTime)
+    nostr.disconnectRelays()
 
 BLOCKHEIGHT_REPORTED_69 = "blockheightReported69"
 BLOCKHEIGHT_SEEN = "blockheightSeen"
@@ -64,6 +92,8 @@ if __name__ == '__main__':
 
     # Report bot info
     logger.debug(f"Bot npub: {nostr.getPubkey().bech32()}")
+
+    publishBotProfile()
 
     # Load last checked block height
     savedData = files.loadJsonFile(DATA_FILE, {})

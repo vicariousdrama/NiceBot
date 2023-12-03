@@ -1,6 +1,14 @@
 {
     "nostr": {
         "nsec": "nsecwhatever",
+        "profile": {
+            "name": "Nice Bot",
+            "about": "This bot posts whenever the Bitcoin blockheight contains 69",
+            "picture": "",
+            "banner": "",
+            "lud16": "wearydoor58@walletofsatoshi.com",
+            "nip05": ""
+        },
         "relays": [
             {"url":"wss://nostr.pleb.network","read":true,"write":true},
             {"url":"wss://nostr-pub.wellorder.net","read":true,"write":true},
