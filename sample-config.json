@@ -1,0 +1,16 @@
+{
+    "nostr": {
+        "nsec": "nsecwhatever",
+        "relays": [
+            {"url":"wss://nostr.pleb.network","read":true,"write":true},
+            {"url":"wss://nostr-pub.wellorder.net","read":true,"write":true},
+            {"url":"wss://relay.damus.io","read":true,"write":true},
+            {"url":"wss://nos.lol","read":true,"write":true},
+            {"url":"wss://relay.nostr.band","read":true,"write":true},
+            {"url":"wss://relayable.org","read":true,"write":true}
+        ]
+    },
+    "bitcoin": {
+        "url": "https://blockstream.info/api/blocks/tip/height"
+    }
+}

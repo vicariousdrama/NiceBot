@@ -1,0 +1,4 @@
+nostr@git+https://github.com/vicariousdrama/python-nostr.git
+requests
+bech32
+
