@@ -130,6 +130,7 @@ if __name__ == '__main__':
 
             # Process each block from already seen to the new block
             for blockHeight in range(savedData[BLOCKHEIGHT_SEEN] + 1, blockheightCurrent + 1):
+                logger.debug(f"Checking {blockHeight} for 69...")
                 if "69" in str(blockHeight):
 
                     logger.info(f"Block {blockHeight} has a 69!")
@@ -140,13 +141,15 @@ if __name__ == '__main__':
                         isconnected = True
 
                     # Prepare, sign, and publish message to nostr for this block
-                    event = Event(content="NICE", kind=1, tags=[["blockheight",blockHeight]])
+                    event = Event(content="NICE", kind=1, tags=[["blockheight",str(blockHeight)]])
                     nostr.getPrivateKey().sign_event(event)
-                    nostr._relayManager.publish_message(event)
+                    nostr._relayManager.publish_event(event)
                     time.sleep(nostr._relayPublishTime)
 
                     # Make note of last reported
                     savedData[BLOCKHEIGHT_REPORTED_69] = blockHeight
+
+            logger.debug("Done checks for 69")
 
             # Disconnect if we connected
             if isconnected: nostr.disconnectRelays()
