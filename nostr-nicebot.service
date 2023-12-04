@@ -1,0 +1,18 @@
+# NiceBot: Posts when bitcoin blockheight contains 69
+# /etc/systemd/system/nostr-nicebot.service
+
+[Unit]
+Description=Nicebot posts when blockheight contains 69
+StartLimitIntervalSec=600
+StartLimitBurst=2
+
+[Service]
+WorkingDirectory=/home/admin/NiceBot
+ExecStart=/home/admin/.pyenv/nicebot/bin/python3 /home/admin/NiceBot/main.py
+User=admin
+Restart=on-failure
+RestartSec=30
+PermissionsStartOnly=true
+
+[Install]
+WantedBy=multi-user.target
