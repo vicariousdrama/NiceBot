@@ -7,6 +7,7 @@ This script monitors the Bitcoin blockchain and anytime the block height contain
 - [Configuring the Bot](#configuring-the-bot)
   - [Nostr Config](#nostr-config)
   - [Bitcoin Config](#bitcoin-configuration)
+  - [Matchon Config](#matchon-configuration)
 - [Running the Script](#running-the-script)
 - [Running as a Service](#running-as-a-service)
 - [For More Help](#for-more-help)
@@ -65,7 +66,7 @@ cp -n sample-config.json data/config.json
 
 Within this directory, a configuration file named `config.json` is read.  If this file does not exist, one will be created using the `sample-config.json`.
 
-The server configuration file is divided into a few key sections. One for each of Nostr and Bitcoin
+The server configuration file is divided into a few key sections. One for each of Nostr, Bitcoin, and Matchon
 
 ### Nostr Config
 
@@ -102,6 +103,26 @@ The `bitcoin` configuration section has these keys
 | key | description |
 | --- | --- |
 | url | A url for a service returning the current bitcoin block height |
+
+### Matchon Configuration
+
+Edit the configuration
+
+```sh
+nano data/config.json
+```
+
+The `matchon` configuration section has these keys
+
+| key | description |
+| --- | --- |
+| value | The value to look for related to the block height |
+| type | The type of match to perform. Should be one of `contains`, `endswith`, `startswith`, or `modulus` |
+| text | The text to write as the content of the nostr post when a match is found |
+
+The default setup is `value` = 69, and `type` = contains.
+
+If the `type` is set to `modulus` then the blockheight will be divided by the value, and if the result is 0, it is considered a success to write the `text` to a post.
 
 ## Running the Script
 

@@ -20,5 +20,11 @@
     },
     "bitcoin": {
         "url": "https://blockstream.info/api/blocks/tip/height"
+    },
+    "matchon": {
+        "value": "69",
+        "type.comment": "can be: contains, endswith, startswith, modulus",
+        "type": "contains",
+        "text": "NICE"
     }
 }

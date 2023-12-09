@@ -59,7 +59,7 @@ def publishBotProfile():
     time.sleep(nostr._relayPublishTime)
     nostr.disconnectRelays()
 
-BLOCKHEIGHT_REPORTED_69 = "blockheightReported69"
+BLOCKHEIGHT_REPORTED = "blockheightReported69"
 BLOCKHEIGHT_SEEN = "blockheightSeen"
 LOG_FILE = f"{files.logFolder}nicebot.log"
 CONFIG_FILE = f"{files.dataFolder}config.json"
@@ -90,6 +90,12 @@ if __name__ == '__main__':
     validateConfig()
     nostr.config = config["nostr"]
 
+    matchon = {"value":"69","type":"contains","text":"NICE"}
+    if "matchon" in config: matchon = config["matchon"]
+    matchvalue = matchon["value"]
+    matchtype = matchon["type"]
+    matchtext = matchon["text"]
+
     # Report bot info
     logger.debug(f"Bot npub: {nostr.getPubkey().bech32()}")
 
@@ -104,9 +110,9 @@ if __name__ == '__main__':
     if BLOCKHEIGHT_SEEN not in savedData: 
         changed = True
         savedData[BLOCKHEIGHT_SEEN] = getBlockHeight()
-    if BLOCKHEIGHT_REPORTED_69 not in savedData: 
+    if BLOCKHEIGHT_REPORTED not in savedData: 
         changed = True
-        savedData[BLOCKHEIGHT_REPORTED_69] = 69
+        savedData[BLOCKHEIGHT_REPORTED] = 69
     if changed: 
         logger.debug("Saving state")
         files.saveJsonFile(DATA_FILE, savedData)
@@ -130,10 +136,25 @@ if __name__ == '__main__':
 
             # Process each block from already seen to the new block
             for blockHeight in range(savedData[BLOCKHEIGHT_SEEN] + 1, blockheightCurrent + 1):
-                logger.debug(f"Checking {blockHeight} for 69...")
-                if "69" in str(blockHeight):
+                logger.debug(f"Checking {blockHeight} for {matchvalue}...")
+                matched = False
+                if matchtype == "contains":
+                    if matchvalue in str(blockHeight): 
+                        matched = True
+                if matchtype == "startswith":
+                    if str(blockHeight).startswith(matchvalue):
+                        matched = True
+                if matchtype == "endswith":
+                    if str(blockHeight).endswith(matchvalue):
+                        matched = True
+                if matchtype == "modulus":
+                    if str(matchvalue).isnumeric():
+                        if blockHeight % int(matchvalue) == 0:
+                            matched = True
 
-                    logger.info(f"Block {blockHeight} has a 69!")
+                if matched:
+
+                    logger.info(f"Block {blockHeight} {matchtype} {matchvalue} success!")
 
                     # Connect to relays if not yet connected
                     if not isconnected: 
@@ -141,15 +162,15 @@ if __name__ == '__main__':
                         isconnected = True
 
                     # Prepare, sign, and publish message to nostr for this block
-                    event = Event(content="NICE", kind=1, tags=[["blockheight",str(blockHeight)]])
+                    event = Event(content=matchtext, kind=1, tags=[["blockheight",str(blockHeight)]])
                     nostr.getPrivateKey().sign_event(event)
                     nostr._relayManager.publish_event(event)
                     time.sleep(nostr._relayPublishTime)
 
                     # Make note of last reported
-                    savedData[BLOCKHEIGHT_REPORTED_69] = blockHeight
+                    savedData[BLOCKHEIGHT_REPORTED] = blockHeight
 
-            logger.debug("Done checks for 69")
+            logger.debug("Done checks")
 
             # Disconnect if we connected
             if isconnected: nostr.disconnectRelays()
